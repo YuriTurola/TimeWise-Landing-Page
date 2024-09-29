@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeWise - Gestão de Agendamentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+
+<style>   .timewise-title {
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #FFD700; /* Golden Yellow */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Subtle Shadow */
+}</style>
+
+<body class="bg-gray-100">
+    <div class="bg-black text-white font-sans">
+        <!-- Navbar -->
+        <div class="container mx-auto px-4 py-8 flex justify-between items-center">
+            <div>
+                <p class="timewise-title">TimeWise</p>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex space-x-8 items-center">
+                <a class="hover:underline" href="#inicio">Início</a>
+                <a class="hover:underline" href="#sobre">Sobre</a>
+                <a class="hover:underline" href="#servicos">Serviços</a>
+                <a class="hover:underline" href="#contato">Contato</a>
+            </div>  
+
+            <!-- Mobile Navigation Button -->
+            <div class="md:hidden">
+                <button class="focus:outline-none" id="menuButton">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Modal Structure -->
+    <!-- Modal Structure -->
+    <div id="modal" class="fixed inset-0 hidden flex justify-center items-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center w-11/12 max-w-md">
+            <h2 class="text-xl font-bold text-black">Em breve...</h2>
+            <p class="mt-4 text-black">Nosso aplicativo estará disponível em breve!</p>
+            <button id="closeModal" class="mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg">
+                Fechar
+            </button>
+        </div>
+    </div>
+    
+    
+
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden px-4 pb-4 hidden" id="mobileMenu">
+            <a class="block py-2 hover:underline" href="#inicio">Início</a>
+            <a class="block py-2 hover:underline" href="#sobre">Sobre</a>
+            <a class="block py-2 hover:underline" href="#servicos">Serviços</a>
+            <a class="block py-2 hover:underline" href="#contato">Contato</a>
+        </div>
+
+        <!-- Logo Section -->
+        <div class="flex flex-wrap justify-center gap-4" id="inicio">
+            <div class="flex flex-col items-center w-full max-w-sm md:max-w-md lg:max-w-lg">
+                <img class="w-max h-auto mb-6" src="imagens/logo_timewise.png" alt="Logo Timewise">
+                <div class="mt-6">
+                    <button class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg" id="baixarButton2">
+                        BAIXAR APLICATIVO
+                    </button>
+                </div>
+                <img class="w-max h-max mt-6" src="icones/icons8.png" alt="Ícones">
+            </div>
+            <img class="w-full h-max max-w-prose md:max-w-md lg:max-w-lg" src="imagens/mulher_de_chachos.png"
+                alt="Mulher de Cachos">
+        </div>
+
+        <!-- Yellow Line Divider -->
+        <div class="bg-yellow-400 h-1"></div>
+
+        <!-- About Us Section -->
+        <div class="container mx-auto px-4 py-20 bg-black text-right" id="sobre">
+            <h1 class="text-4xl md:text-5xl font-bold text-yellow-400">SOBRE NÓS</h1>
+            <p class="px-4 py-6 max-w-lg ml-auto">
+                Bem-vindo ao TIMEWISE, onde simplificamos o agendamento de compromissos de maneira intuitiva e
+                eficiente.
+            </p>
+            <p class="max-w-lg ml-auto">
+                Somos estudantes do Senac Minas em Análise e Desenvolvimento de Sistemas, apaixonados por tecnologia e
+                comprometidos em criar soluções que facilitam seu dia a dia. Nosso objetivo é proporcionar uma
+                experiência fluida e sem complicações, permitindo que você agende compromissos de forma simples e rápida
+                diretamente pela web.
+            </p>
+        </div>
+
+        <!-- Yellow Line Divider -->
+        <div class="bg-yellow-400 h-1"></div>
+
+        <!-- Highlight Section -->
+        <div class="flex items-center justify-center py-10 px-4" id="servicos">
+            <div class="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl">
+                <div class="w-full h-auto max-w-sm md:max-w-md lg:max-w-lg flex justify-center mb-6 lg:mb-0">
+                    <img src="imagens/fotoapp.png" alt="Mobile app screenshot" class="rounded-lg w-full h-auto">
+                </div>
+                <div class="w-full lg:w-1/2 p-4 text-center lg:text-left flex flex-col items-center lg:items-start">
+                    <h1 class="text-3xl lg:text-5xl font-bold text-yellow-400 leading-tight mb-4">
+                        CANSADO DE PERDER HORAS TENTANDO ORGANIZAR SEU TEMPO?
+                    </h1>
+                    <p class="text-white mb-4">
+                        CONHEÇA NOSSA PLATAFORMA INOVADORA, TIME WISE AGENDAMENTOS, A SOLUÇÃO DEFINITIVA PARA
+                        TRANSFORMAR A FORMA COMO VOCÊ GERENCIA SEUS COMPROMISSOS, AGORA COM MAIS SABEDORIA.
+                    </p>
+                    <h2 class="text-3xl lg:text-5xl font-bold text-yellow-400 leading-tight mb-4">
+                        NOSSO APLICATIVO
+                    </h2>
+                    <p class="text-white">
+                        DESENVOLVIDO PARA VOCÊ, EMPRESÁRIO! SEJA PESSOA FÍSICA OU JURÍDICA, NOSSO APP OFERECE TUDO PARA
+                        GERENCIAR SEU NEGÓCIO EFICIENTEMENTE.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yellow Line Divider -->
+        <div class="bg-yellow-400 h-1"></div>
+
+        <!-- Benefits Section -->
+        <div class="flex flex-col lg:flex-row items-center justify-center gap-8 mb-8">
+            <div class="w-full lg:w-1/2">
+                <img src="imagens/varios_celulares.png" alt="Mobile app screenshot" class="rounded-lg w-full h-auto">
+            </div>
+            <div class="w-full lg:w-1/2 bg-secondary p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-text-light mb-4">
+                    <i class="fas fa-clock mr-2"></i>OTIMIZE SEU TEMPO COM TIMEWISE
+                </h2>
+                <p class="text-text-light mb-4">
+                    NOSSA PLATAFORMA INOVADORA TRANSFORMA A FORMA COMO VOCÊ GERENCIA SEUS COMPROMISSOS, TRAZENDO MAIS
+                    EFICIÊNCIA E ORGANIZAÇÃO PARA O SEU DIA A DIA.
+                </p>
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-briefcase mr-2"></i>PARA EMPRESÁRIOS
+                </h3>
+                <p class="text-text-light">
+                    SEJA VOCÊ UM PROFISSIONAL AUTÔNOMO OU DONO DE UMA EMPRESA, NOSSO APP OFERECE TODAS AS FERRAMENTAS
+                    NECESSÁRIAS PARA GERENCIAR SEU NEGÓCIO DE FORMA EFICIENTE E PROFISSIONAL.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-building mr-2"></i>PARA EMPRESA
+                </h3>
+                <ul class="list-disc ml-4 text-text-light">
+                    <li>MAIOR EFICIÊNCIA E PRODUTIVIDADE;</li>
+                    <li>ORGANIZAÇÃO INTERNA MELHORADA;</li>
+                    <li>APRIMORAMENTO DA QUALIDADE DO ATENDIMENTO;</li>
+                    <li>REDUÇÃO DE CUSTOS OPERACIONAIS.</li>
+                </ul>
+            </div>
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-user mr-2"></i>PARA CLIENTE
+                </h3>
+                <ul class="list-disc ml-4 text-text-light">
+                    <li>MAIOR CONVENIÊNCIA NO AGENDAMENTO;</li>
+                    <li>MELHOR EXPERIÊNCIA DO USUÁRIO;</li>
+                    <li>FEEDBACK DIRETO E AVALIAÇÕES DE SERVIÇOS.</li>
+                </ul>
+            </div>
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-rocket mr-2"></i>NÃO PERCA TEMPO!
+                </h3>
+                <p class="text-text-light mb-4">
+                    BAIXE NOSSO APLICATIVO AGORA MESMO E TRANSFORME SUA EXPERIÊNCIA COM SERVIÇOS DE BELEZA.
+                    ACESSE UMA NOVA ERA DE CONVENIÊNCIA E EFICIÊNCIA, TANTO PARA SUA EMPRESA QUANTO PARA SEUS CLIENTES.
+                </p>
+                <button class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg" id="baixarButton1">
+                    Baixar Agora
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-black text-white py-12">
+        <div class="container mx-auto">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8">
+                TIMEWISE: O MELHOR APP PARA GESTÃO DE AGENDAMENTOS!
+            </h1>
+
+            <!-- Yellow Line Divider -->
+            <div class="bg-yellow-400 h-1 mb-8"></div>
+
+            <!-- Image Section -->
+            <div class="flex justify-center mb-8">
+                <div class="flex flex-row max-w-3xl justify-center gap-4">
+                    <img src="imagens/jovem-na-barbearia-aparando-cabelo.jpg" alt="Barber screenshot" class="object-cover border-r-4 border-yellow-400 rounded-lg w-full max-w-md">
+                    <img src="imagens/homen_fazendo_barba.png" alt="Barber screenshot" class="object-cover rounded-lg w-full max-w-md">
+                </div>
+            </div>
+
+            <!-- Yellow Line Divider -->
+            <div class="bg-yellow-400 h-1 mb-8"></div>
+
+            <!-- Contact Info & Social Links -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-white" id="contato">
+                <!-- Contatos -->
+                <div class="p-6 bg-black rounded-lg">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4">CONTATOS</h2>
+                    <ul class="space-y-2">
+                        <!-- Phone link -->
+                        <li>
+                            <a href="tel:+5535997109435" class="hover:underline">
+                                <i class="fas fa-phone-alt mr-2"></i>(35) 99710-9435
+                            </a>
+                        </li>
+                        
+                        <!-- Instagram link -->
+                        <li>
+                            <a href="https://www.instagram.com/belezaeglamour01/" target="_blank" class="hover:underline">
+                                <i class="fab fa-instagram mr-2"></i>@TIMEWISEGENDAMENTOS
+                            </a>
+                        </li>
+                        
+                        <!-- Facebook link -->
+                        <li>
+                            <a href="https://www.facebook.com/timewisegendamentos/" target="_blank" class="hover:underline">
+                                <i class="fab fa-facebook mr-2"></i>TIMEWISEGENDAMENTOS
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Redes Sociais -->
+                <div class="p-6 bg-black rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-share-alt mr-2"></i>REDES SOCIAIS
+                    </h3>
+                    <ul class="space-y-2">
+                        <!-- Facebook link -->
+                        <li>
+                            <a href="https://www.facebook.com/timewisegendamentos/" target="_blank" class="hover:text-yellow-500 transition duration-300">
+                                <i class="fab fa-facebook mr-2"></i>Facebook
+                            </a>
+                        </li>
+                        
+                        <!-- Instagram link with corrected URL -->
+                        <li>
+                            <a href="https://www.instagram.com/belezaeglamour01/" target="_blank" class="hover:text-yellow-500 transition duration-300">
+                                <i class="fab fa-instagram mr-2"></i>Instagram
+                            </a>
+                        </li>
+                        
+                        <!-- LinkedIn link -->
+                        <li>
+                            <a href="https://www.linkedin.com/" target="_blank" class="hover:text-yellow-500 transition duration-300">
+                                <i class="fab fa-linkedin mr-2"></i>LinkedIn
+                            </a>
+                        </li>
+                    </ul>
+                    
+                </div>
+                
+
+            <!-- Bottom Line -->
+            <div class="bg-yellow-400 h-1 mt-8"></div>
+            
+        </div>
+        <div class="bg-yellow-400 h-1 mb-8"></div>
+        
+    </footer>
+
+    <!-- Toggle Mobile Menu -->
+    <script>
+        const menuButton = document.getElementById('menuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+
+    <!-- Firebase User Info Script -->
+    <script>
+        
+    // Get modal elements
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const baixarButton1 = document.getElementById('baixarButton1');
+    const baixarButton2 = document.getElementById('baixarButton2');
+
+    // Open modal function
+    function openModal() {
+        modal.classList.remove('hidden');
+    }
+
+    // Close modal function
+    closeModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    // Event listeners for buttons
+    baixarButton1.addEventListener('click', openModal);
+    baixarButton2.addEventListener('click', openModal);
+
+
+        const userDropdown = document.getElementById('userDropdown');
+        const userMenu = document.getElementById('userMenu');
+
+        userDropdown.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+
+        window.addEventListener('click', (event) => {
+            if (!userDropdown.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
